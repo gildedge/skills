@@ -1,0 +1,17 @@
+# variant,canonical
+# The single source of truth for the remap. Edit this after Step 1 scan + Step 2
+# decisions. A blank canonical means "leave this value alone / skip".
+# Canonical slugs must exist as rows in public.ventures (see guardrail).
+lumier-studios,lumier-studios
+vc_lumier_studios,lumier-studios
+lumier,lumier-studios
+Lumier Studios,lumier-studios
+lumier-pictures,lumier-pictures
+gilded-artworks,gilded-art-works
+artworks,gilded-art-works
+dm-galleries,gilded-art-works
+photofilmworks,photo-film-works
+photofilm,photo-film-works
+PhotoFilmWorks,photo-film-works
+gilded-ventures,gilded-travel-works
+@danielmontero,gildedge-holdings

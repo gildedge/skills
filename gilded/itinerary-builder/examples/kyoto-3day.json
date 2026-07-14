@@ -1,0 +1,40 @@
+{
+  "slug": "kyoto-imperial-3-nights",
+  "title": "Kyoto — The Imperial City in Three Acts",
+  "city": "Kyoto",
+  "cityId": "kyoto",
+  "tier": "patron",
+  "nights": 3,
+  "days": [
+    {
+      "day": 1,
+      "title": "Arrival & Secret-Garden Sanctuary",
+      "name": "Check-in at Aman Kyoto",
+      "description": "Arrive and settle into Aman Kyoto, a minimalist sanctuary hidden within a secret garden forest with onsen baths and absolute quiet. The afternoon is left open for forest bathing and a slow first evening, easing into the city's rhythm.",
+      "image": "https://www.aman.com/sites/default/files/styles/listing_teaser_slim_extra_large/public/2024-03/aman_kyoto_japan_-_experience_sakura_season_janu.jpg?itok=wDC-WON2",
+      "location": "Kyoto",
+      "tier": "patron",
+      "references": { "cityId": "kyoto", "hotelName": "Aman Kyoto" }
+    },
+    {
+      "day": 2,
+      "title": "Tea, Temples & a Three-Star Table",
+      "name": "Private Tea Ceremony & Kikunoi Kaiseki",
+      "description": "Morning opens with a private Chanoyu ceremony led by a 15th-generation tea master in a historic Urasenke tearoom. The evening closes at Kikunoi Honten, Yoshihiro Murata's three-star kaiseki temple, for a seasonal course reflecting the 72 microseasons.",
+      "image": "https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?q=80&w=2070&auto=format&fit=crop",
+      "location": "Kyoto",
+      "tier": "patron",
+      "references": { "cityId": "kyoto", "experienceNames": ["Private Tea Ceremony with Grandmaster"], "restaurantNames": ["Kikunoi Honten"] }
+    },
+    {
+      "day": 3,
+      "title": "An Invitation-Only Evening in Gion",
+      "name": "Geisha Evening in Gion",
+      "description": "The final night is an invitation-only evening in a historic ochaya teahouse, with a private geiko and maiko performance rarely open to visitors. Dinner beforehand is a refined Kyo-ryori course, leaving the night for conversation, music, and ceremony.",
+      "image": "https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?q=80&w=2070&auto=format&fit=crop",
+      "location": "Kyoto",
+      "tier": "patron",
+      "references": { "cityId": "kyoto", "experienceNames": ["Geisha Evening in Gion"], "restaurantNames": ["Nakamura"] }
+    }
+  ]
+}

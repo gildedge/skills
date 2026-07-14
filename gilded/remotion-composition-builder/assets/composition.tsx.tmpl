@@ -1,0 +1,106 @@
+import {
+  AbsoluteFill,
+  Sequence,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+  spring,
+  Img,
+  staticFile,
+} from "remotion";
+
+// Auto-scaffolded by the remotion-composition-builder skill.
+// Real Remotion v4 API — edit freely.
+
+const BRAND = __BRAND__;
+
+// ── Title overlay: spring rise + opacity envelope ────────────────────
+const TitleFade = ({ text, delay }: { text: string; delay: number }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const progress = spring({ frame: frame - delay, fps, config: { damping: 200 } });
+  const opacity = interpolate(frame - delay, [0, 30, 100, 130], [0, 1, 1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const translateY = interpolate(progress, [0, 1], [30, 0]);
+  const scale = interpolate(progress, [0, 1], [0.95, 1]);
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: "40%",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        opacity,
+        transform: `translateY(${translateY}px) scale(${scale})`,
+        fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+        fontSize: 80,
+        fontWeight: 700,
+        color: BRAND.text,
+        textShadow: "0 10px 30px rgba(0,0,0,0.8)",
+        letterSpacing: "-0.03em",
+        zIndex: 100,
+      }}
+    >
+      {text}
+    </div>
+  );
+};
+
+// ── Cinematic image block: four Apple-style motions ──────────────────
+type Motion = "reveal-up" | "zoom-out" | "slide-left" | "fade-away" | "fade-in";
+
+const CinematicUI = ({ src, startFrame, animationType }: { src: string; startFrame: number; animationType: Motion }) => {
+  const frame = useCurrentFrame();
+  const localFrame = frame - startFrame;
+
+  const opacity = interpolate(localFrame, [0, 20, 130, 150], [0, 1, 1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  let transform = "";
+  let blur = 0;
+  if (animationType === "reveal-up") {
+    const y = interpolate(localFrame, [0, 150], [200, -50]);
+    const rotateX = interpolate(localFrame, [0, 150], [15, 0]);
+    const scale = interpolate(localFrame, [0, 150], [0.9, 1.05]);
+    transform = `perspective(1000px) translateY(${y}px) rotateX(${rotateX}deg) scale(${scale})`;
+  } else if (animationType === "zoom-out") {
+    transform = `scale(${interpolate(localFrame, [0, 150], [1.15, 0.95])})`;
+  } else if (animationType === "slide-left") {
+    transform = `translateX(${interpolate(localFrame, [0, 150], [100, -100])}px) scale(1.05)`;
+  } else if (animationType === "fade-away") {
+    transform = `scale(${interpolate(localFrame, [0, 150], [1.0, 1.1])})`;
+    blur = interpolate(localFrame, [100, 150], [0, 20], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  } else {
+    transform = `scale(${interpolate(localFrame, [0, 150], [1.0, 1.02])})`;
+  }
+
+  return (
+    <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", opacity, filter: blur ? `blur(${blur}px)` : undefined }}>
+      <Img
+        src={staticFile(src)}
+        style={{
+          width: "85%",
+          borderRadius: 16,
+          boxShadow: `0 30px 100px -20px rgba(0,0,0,0.8), 0 0 80px ${BRAND.glow}`,
+          transform,
+          border: "1px solid rgba(255,255,255,0.05)",
+        }}
+      />
+    </AbsoluteFill>
+  );
+};
+
+export const __NAME__ = () => {
+  return (
+    <AbsoluteFill style={{ background: BRAND.background }}>
+__SEQUENCES__
+    </AbsoluteFill>
+  );
+};
