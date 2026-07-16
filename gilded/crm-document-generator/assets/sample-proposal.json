@@ -1,0 +1,18 @@
+{
+  "org": { "name": "LUMIER STUDIOS", "tagline": "Cinematic Storytelling & Brand Film", "email": "studio@lumierstudios.com", "site": "lumierstudios.com" },
+  "brand": "gilded",
+  "number": "PROP-2026-0011",
+  "status": "sent",
+  "currency": "USD",
+  "created_at": "2026-07-14",
+  "title": "Brand Film Partnership — Q3",
+  "client": { "full_name": "Ava Sinclair", "company": "Sinclair & Co.", "email": "ava@sinclair.co", "phone": "+1 (310) 555-0182" },
+  "summary": "A three-film cinematic package to launch the Sinclair & Co. flagship line, engineered for paid social and the site hero.",
+  "line_items": [
+    { "description": "Hero brand film (90s) — concept, shoot, post", "qty": 1, "unit_price": 24000 },
+    { "description": "Product vignettes (3 × 30s)", "qty": 3, "unit_price": 4500 },
+    { "description": "Social cutdowns (10 × 15s)", "qty": 10, "unit_price": 600 }
+  ],
+  "tax_rate": 0.0725,
+  "deposit_pct": 0.5
+}

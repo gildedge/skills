@@ -1,0 +1,57 @@
+# Gilded Edge provisioning map — distilled from PROVISIONING_CHECKLIST.md
+# Columns (tab-separated): app	provider	service_slug	label	env_vars	dashboard_url	notes
+# - app: canonical folder slug under ventures/ or infrastructure/
+# - service_slug: one of google-ai|stripe|supabase|resend|elevenlabs|other (for log-provisioned-key.sh)
+# - label: the <app>-<env> name to use in the dashboard
+# - env_vars: comma-separated env var names this key populates
+# - "one key per app per service — never share across ventures"
+app	provider	service_slug	label	env_vars	dashboard_url	notes
+aria-agent	Google AI Studio	google-ai	aria-agent-prod	GEMINI_API_KEY	https://aistudio.google.com/apikey	own Google Cloud project per app
+edge-design-works	Google AI Studio	google-ai	edge-design-works-prod	GEMINI_API_KEY	https://aistudio.google.com/apikey	Vite app
+edge-os-works	Google AI Studio	google-ai	edge-os-works-prod	GEMINI_API_KEY,GOOGLE_API_KEY	https://aistudio.google.com/apikey
+gilded-art-works	Google AI Studio	google-ai	gilded-art-works-prod	GEMINI_API_KEY,GOOGLE_API_KEY	https://aistudio.google.com/apikey
+gilded-form-works	Google AI Studio	google-ai	gilded-form-works-prod	GOOGLE_GENERATIVE_AI_API_KEY	https://aistudio.google.com/apikey	note the different var name
+gilded-travel-works	Google AI Studio	google-ai	gilded-travel-works-prod	VITE_GEMINI_API_KEY,GEMINI_API_KEY	https://aistudio.google.com/apikey	Vite app, dual var
+gildedge-portal	Google AI Studio	google-ai	gildedge-portal-prod	GEMINI_API_KEY,GOOGLE_API_KEY	https://aistudio.google.com/apikey
+aria-agent	Supabase	supabase	aria-agent	NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY	https://supabase.com/dashboard	own project; service_role is secret
+edge-design-works	Supabase	supabase	edge-design-works	VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY	https://supabase.com/dashboard	Vite vars
+edge-os-works	Supabase	supabase	edge-os-works	NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY	https://supabase.com/dashboard
+gilded-art-works	Supabase	supabase	gilded-art-works	NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY	https://supabase.com/dashboard	likely already exists (phase 27)
+gilded-art-works-docs-web	Supabase	supabase	gilded-art-works-docs	NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY	https://supabase.com/dashboard	shared docs project (web+api)
+gildedge-portal	Supabase	supabase	gildedge-portal	NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY	https://supabase.com/dashboard
+edge-design-works	Stripe	stripe	edge-design-works-prod	STRIPE_SECRET_KEY,STRIPE_WEBHOOK_SECRET,STRIPE_PRICE_PRO,STRIPE_PRICE_STUDIO	https://dashboard.stripe.com	own webhook secret + price IDs
+edge-os-works	Stripe	stripe	edge-os-works-prod	STRIPE_SECRET_KEY,STRIPE_WEBHOOK_SECRET,STRIPE_BOOTSTRAP_PRICE_ID,STRIPE_PROFESSIONAL_PRICE_ID,STRIPE_GALLERY_PRICE_ID,STRIPE_ENTERPRISE_PRICE_ID	https://dashboard.stripe.com
+gilded-art-works	Stripe	stripe	gilded-art-works-prod	STRIPE_SECRET_KEY,STRIPE_WEBHOOK_SECRET,STRIPE_CONNECT_WEBHOOK_SECRET	https://dashboard.stripe.com	6 price IDs (mo+annual) + Connect
+gilded-art-works-docs-web	Stripe	stripe	gilded-art-works-docs-web-prod	STRIPE_SECRET_KEY,STRIPE_WEBHOOK_SECRET,STRIPE_PRICE_PROFESSIONAL,STRIPE_PRICE_GALLERY	https://dashboard.stripe.com
+gildedge-portal	Stripe	stripe	gildedge-portal-prod	STRIPE_SECRET_KEY,STRIPE_WEBHOOK_SECRET	https://dashboard.stripe.com	4 price IDs (Bootstrap,Pro,Gallery,Enterprise)
+aria-agent	Resend	resend	aria-agent-prod	RESEND_API_KEY	https://resend.com/api-keys	verify gilded-ventures.com domain once
+edge-os-works	Resend	resend	edge-os-works-prod	RESEND_API_KEY,RESEND_FROM_EMAIL	https://resend.com/api-keys	FROM=hello@gilded-ventures.com
+gilded-art-works	Resend	resend	gilded-art-works-prod	RESEND_API_KEY,RESEND_FROM_EMAIL	https://resend.com/api-keys
+gildedge-portal	Resend	resend	gildedge-portal-prod	RESEND_API_KEY,RESEND_FROM_EMAIL	https://resend.com/api-keys
+aria-agent	ElevenLabs	elevenlabs	aria-agent-prod	ELEVENLABS_API_KEY	https://elevenlabs.io/app/settings/api-keys
+edge-os-works	ElevenLabs	elevenlabs	edge-os-works-prod	ELEVENLABS_API_KEY,ELEVENLABS_VOICE_ID	https://elevenlabs.io/app/settings/api-keys	pick a voice in Voice Library
+gildedge-portal	ElevenLabs	elevenlabs	gildedge-portal-prod	ELEVENLABS_API_KEY,ELEVENLABS_VOICE_ID	https://elevenlabs.io/app/settings/api-keys
+gilded-art-works	EasyPost	other	gilded-art-works-prod	EASYPOST_API_KEY	https://www.easypost.com/account/api-keys	EZTK_test for dev, EZAK for prod
+gilded-art-works-docs-web	EasyPost	other	gilded-art-works-docs-web-prod	EASYPOST_API_KEY	https://www.easypost.com/account/api-keys
+edge-os-works	Replicate	other	edge-os-works-prod	REPLICATE_API_TOKEN	https://replicate.com/account/api-tokens
+gilded-art-works	Replicate	other	gilded-art-works-prod	REPLICATE_API_TOKEN	https://replicate.com/account/api-tokens
+gildedge-portal	Replicate	other	gildedge-portal-prod	REPLICATE_API_TOKEN	https://replicate.com/account/api-tokens
+edge-os-works	FAL.ai	other	edge-os-works-prod	FAL_KEY	https://fal.ai/dashboard/keys
+edge-os-works	AtlasCloud	other	edge-os-works-prod	ATLASCLOUD_API_KEY	https://atlascloud.ai	check dashboard for your account
+gilded-travel-works	Firecrawl	other	gilded-travel-works-prod	FIRECRAWL_API_KEY	https://www.firecrawl.dev/app/api-keys
+gilded-travel-works	Firebase	other	gilded-travel-works	VITE_FIREBASE_API_KEY,VITE_FIREBASE_AUTH_DOMAIN,VITE_FIREBASE_PROJECT_ID,VITE_FIREBASE_STORAGE_BUCKET,VITE_FIREBASE_MESSAGING_SENDER_ID,VITE_FIREBASE_APP_ID	https://console.firebase.google.com	Project Settings > Your Apps > Web App
+edge-os-works	Google Cloud OAuth (Calendar)	other	edge-os-works	GOOGLE_CALENDAR_CLIENT_ID,GOOGLE_CALENDAR_CLIENT_SECRET,GOOGLE_CALENDAR_REDIRECT_URI	https://console.cloud.google.com/apis/credentials	Web App OAuth client; per-env redirect URIs
+gilded-art-works	Google Cloud OAuth (Calendar)	other	gilded-art-works	GOOGLE_CALENDAR_CLIENT_ID,GOOGLE_CALENDAR_CLIENT_SECRET,GOOGLE_CALENDAR_REDIRECT_URI	https://console.cloud.google.com/apis/credentials
+gildedge-portal	Google Cloud OAuth (Calendar)	other	gildedge-portal	GOOGLE_CALENDAR_CLIENT_ID,GOOGLE_CALENDAR_CLIENT_SECRET,GOOGLE_CALENDAR_REDIRECT_URI	https://console.cloud.google.com/apis/credentials
+edge-os-works	Plausible	other	edge-os-works	NEXT_PUBLIC_PLAUSIBLE_DOMAIN	https://plausible.io/sites
+gildedge-portal	Plausible	other	gildedge-portal	NEXT_PUBLIC_PLAUSIBLE_DOMAIN	https://plausible.io/sites
+mirofish	OpenAI-compatible (LLM)	other	mirofish-prod	LLM_API_KEY,LLM_BASE_URL,LLM_MODEL_NAME	https://bailian.console.aliyun.com/	default Aliyun Bailian qwen-plus
+mirofish	Zep memory (optional)	other	mirofish-prod	ZEP_API_KEY	https://app.getzep.com/	optional
+aria-agent	Telegram bot	other	aria-agent	TELEGRAM_BOT_TOKEN,TELEGRAM_CHAT_ID	https://t.me/BotFather	chat ID via getUpdates
+aria-agent	Local secret	other	aria-agent	CRON_SECRET	local	openssl rand -hex 32 (use set-local-env.sh --generate)
+edge-os-works	Local secret	other	edge-os-works	CRON_SECRET,AUTOMATION_WEBHOOK_SECRET	local	openssl rand -hex 32
+gilded-art-works	Local secret	other	gilded-art-works	CRON_SECRET	local	openssl rand -hex 32
+gildedge-portal	Local secret	other	gildedge-portal	CRON_SECRET,AUTOMATION_WEBHOOK_SECRET	local	openssl rand -hex 32
+gilded-art-works-docs-api	Local secret	other	gilded-art-works-docs-api	DOWNLOAD_SECRET	local	openssl rand -hex 32
+edge-os-works	n8n webhooks	other	edge-os-works	N8N_WEBHOOK_CONTENT,N8N_WEBHOOK_LEAD	https://n8n.io	your own n8n instance
+gildedge-portal	n8n webhooks	other	gildedge-portal	N8N_WEBHOOK_CONTENT,N8N_WEBHOOK_LEAD	https://n8n.io

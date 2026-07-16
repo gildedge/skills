@@ -1,0 +1,14 @@
+{
+  "name": "EdgeOSIntro",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "background": "radial-gradient(circle at 50% 50%, rgba(99,102,241,0.15) 0%, rgba(9,9,11,1) 60%)",
+  "brand": "edge-os",
+  "scenes": [
+    { "durationInFrames": 150, "title": "EDGE OS WORKS",        "image": "real-portal-home.png", "animation": "reveal-up" },
+    { "durationInFrames": 150, "title": "TOTAL CONTROL",         "image": "real-pipeline.png",    "animation": "zoom-out" },
+    { "durationInFrames": 150, "title": "REVENUE INTELLIGENCE",  "image": "real-analytics.png",   "animation": "slide-left" },
+    { "durationInFrames": 150, "title": "THE FUTURE OF VENTURE", "image": "real-crm-hub.png",     "animation": "fade-away" }
+  ]
+}

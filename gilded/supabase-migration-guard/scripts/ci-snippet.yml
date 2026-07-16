@@ -1,0 +1,29 @@
+# ── Supabase migration guard ──────────────────────────────────────────
+# Drop this job into the venture's .github/workflows/ci.yml.
+# It fails the PR if the migration history cannot rebuild the DB from scratch,
+# so a loose schema.sql / duplicate CREATE can never regress again.
+# (scripts/audit-ecosystem.sh already requires ci.yml to exist per repo.)
+
+  supabase-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # Fast, dependency-free guard: no duplicate CREATE TABLE/TYPE.
+      - name: No colliding CREATE statements
+        run: |
+          bash ./scripts/find_collisions.sh supabase/migrations \
+            || bash .github/find_collisions.sh supabase/migrations
+        # ^ point this at wherever you vendor find_collisions.sh in the repo.
+
+      # Full proof: migrations replay cleanly against an ephemeral local DB.
+      - name: db reset replays cleanly
+        run: |
+          supabase start
+          supabase db reset          # drops & replays supabase/migrations from empty
+          supabase stop
