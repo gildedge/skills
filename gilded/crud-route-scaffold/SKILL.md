@@ -27,13 +27,15 @@ Do **not** use it for AI-proxy or webhook endpoints (that is a different shape �
 
 **Supabase clients** live in `src/lib/supabase/server.ts` and are **async** (Next 15+ `cookies()` is awaited):
 - `createClient()` — anon client, respects RLS, carries the user's session cookies. Use for user-scoped reads/writes.
-- `createServiceClient()` — service-role, **bypasses RLS**. Use only in trusted server code (webhooks, admin PATCH, cron). ⚠️ never returned to the browser.
+- `createServiceClient()` — service-role, **bypasses RLS**. Use only in trusted server code (webhooks, cron), and only after the handler has done its own authn + authz. ⚠️ never returned to the browser. The generated CRUD routes do not use it at all.
 
 **Two auth patterns coexist — pick per entity:**
 - **RSC page guard:** `const { user, role, orgId } = await requireAuth('<section>')` from `@/lib/require-auth`. Redirects to `/login` or `/portal?access=denied`. Pages then `logAuditEvent({...}).catch(() => {})` (fire-and-forget).
 - **Route-handler guard:** either `requireAuth('<section>')` wrapped in try/catch → 401, plus a `role !== 'admin'` → 403 check (see `api/milestones/route.ts`); **or** the leaner `const { data: { user } } = await supabase.auth.getUser(); if (!user) return 401;` then owner-scope every query with `.eq('user_id', user.id)` (see `api/marketing/strategies/route.ts`).
 
-**Error shape (uniform across routes):** `return NextResponse.json({ error: 'message' }, { status })`. Codes: `401` unauthenticated, `403` forbidden, `400` bad/missing input or invalid JSON, `500` on caught errors (always `console.error('[Entity METHOD] ...', err)` first). Gracefully treat Postgres `42P01` (undefined_table) as a soft success when a table may not be provisioned yet.
+**Error shape (uniform across routes):** `return NextResponse.json({ error: 'message' }, { status })`. Codes: `401` unauthenticated, `403` forbidden, `400` bad/missing input or invalid JSON, `404` when a PATCH/DELETE id matches no row the caller can see, `500` on caught errors (always `console.error('[Entity METHOD] ...', err)` first). The `error` string sent to the client is always a fixed generic message (`'Failed to create'`); never put `error.message` or any raw DB error in the response, it leaks table, column and constraint names. Gracefully treat Postgres `42P01` (undefined_table) as a soft success when a table may not be provisioned yet.
+
+**Writes are allowlisted.** Every generated route has an `ALLOWED_FIELDS` list and copies only those keys out of the request body (`pickAllowed(body)`). `id`, `created_at`, `updated_at` and the owner column are never client-settable: the database or the server stamps them. Never pass a raw `body` to `.insert()` / `.update()`.
 
 **Migrations:** early ones are `NNN_name.sql`, newer ones `YYYYMMDD_name.sql`. Prefer the date form. PK is `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`. Every mutable table gets `created_at` **and** `updated_at TIMESTAMPTZ DEFAULT now()`, a shared `update_updated_at()` trigger (guard with `CREATE OR REPLACE`), and indexes on FKs and any filtered column.
 
@@ -52,7 +54,7 @@ Do **not** use it for AI-proxy or webhook endpoints (that is a different shape �
      --column 'status:text' --fk 'client_id:clients' \
      --access staff
    ```
-   Add `--owner user_id` and `--access owner` for a per-user entity. Review the output, then re-run with `--write` to drop the files into `ventures/gildedge-portal` (override with `--venture <name>`).
+   `ALLOWED_FIELDS` in the route is filled from the `--column` and `--fk` names. Add `--owner user_id` and `--access owner` for a per-user entity: that emits `references/route-handler.owner.ts` instead, which stamps `user_id: user.id` on insert, adds `.eq('user_id', user.id)` to every select/update/delete, drops the admin gate (owners manage their own rows) and indexes the owner column. `--access staff` (the default) keeps the staff-shared route. Review the output, then re-run with `--write` to drop the files into `ventures/gildedge-portal` (override with `--venture <name>`).
 3. **Delegate the RLS block.** The migration the generator emits contains a clearly marked `-- >>> RLS: delegate to rls-migration-writer` placeholder. Fill it using that skill so the policies match house conventions and avoid the shipped anti-patterns (`WITH CHECK (true)`, recursive policies):
    ```bash
    bash ~/.claude/skills/rls-migration-writer/scripts/new-migration.sh \
@@ -69,64 +71,83 @@ Do **not** use it for AI-proxy or webhook endpoints (that is a different shape �
 
 ### After — one command emits all four, in-convention:
 
-**`src/app/api/quotes/route.ts` (staff-shared, admin-guarded write):**
+**`src/app/api/quotes/route.ts` (staff-shared; PATCH/DELETE admin only):**
 ```ts
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/require-auth';
 import { logAuditEvent } from '@/lib/audit';
 
-// GET /api/quotes — list (RLS-scoped via the session client)
+const TABLE = 'quotes';
+const SECTION = 'crm';
+
+// Only these keys are ever written from a request body (from --column / --fk).
+const ALLOWED_FIELDS: readonly string[] = ['client_id', 'quote_number', 'total', 'status'];
+// pickAllowed(body) copies just those keys; readJsonObject(req) returns null
+// unless the body is a plain JSON object. Both are in the reference handler.
+
+// GET /api/quotes: list (section-gated, RLS-scoped via the session client)
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const { data, error } = await supabase
-      .from('quotes')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      if (error.code === '42P01') return NextResponse.json({ quotes: [] });
-      throw error;
-    }
-    return NextResponse.json({ quotes: data ?? [] });
-  } catch (err) {
-    console.error('[Quotes GET] error:', err);
-    return NextResponse.json({ error: 'Failed to load quotes' }, { status: 500 });
-  }
-}
-
-// POST /api/quotes — create
-export async function POST(req: NextRequest) {
-  let user, role, orgId;
-  try {
-    const auth = await requireAuth('crm');
-    ({ user, role, orgId } = auth);
+    await requireAuth(SECTION);
   } catch {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let body: Record<string, unknown> = {};
-  try { body = await req.json(); } catch {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      if (error.code === '42P01') return NextResponse.json({ items: [] });
+      throw error;
+    }
+    return NextResponse.json({ items: data ?? [] });
+  } catch (err) {
+    console.error(`[${TABLE} GET] error:`, err);
+    return NextResponse.json({ error: 'Failed to load' }, { status: 500 });
+  }
+}
+
+// POST /api/quotes: create
+export async function POST(req: NextRequest) {
+  let user: { id: string; email: string }; let role: string; let orgId: string;
+  try {
+    const auth = await requireAuth(SECTION);
+    user = auth.user; role = auth.role; orgId = auth.orgId;
+  } catch {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const supabase = await createServiceClient();
-  const { data, error } = await supabase.from('quotes').insert(body).select().single();
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const body = await readJsonObject(req);
+  if (!body) return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+
+  // Session client, not the service client: RLS applies to the write too.
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .insert(pickAllowed(body))
+    .select()
+    .single();
+  if (error) {
+    console.error(`[${TABLE} POST] error:`, error);  // real error stays server-side
+    return NextResponse.json({ error: 'Failed to create' }, { status: 500 });
+  }
 
   logAuditEvent({
     actor_id: user.id, actor_email: user.email, actor_role: role,
-    action: 'write', resource_type: 'quotes', resource_id: data.id,
+    action: 'write', resource_type: TABLE, resource_id: data.id,
     org_id: orgId, outcome: 'success',
   }).catch(() => {});
 
-  return NextResponse.json({ quote: data }, { status: 201 });
+  return NextResponse.json({ item: data }, { status: 201 });
 }
 ```
+
+PATCH and DELETE follow the same shape: `requireAuth` + `role !== 'admin'` gate, `pickAllowed` on the PATCH body (400 if nothing allowlisted remains), `.select('id')` after the write and `404` when it matched no row. The owner variant (`--access owner`) is the same file with `[OWNER_COLUMN]: user.id` stamped on insert and `.eq(OWNER_COLUMN, user.id)` on every query.
 
 **Migration `supabase/migrations/<date>_quotes.sql`** — table + indexes + `updated_at` trigger, with the RLS block delegated:
 ```sql
@@ -160,7 +181,7 @@ ON CONFLICT (id) DO NOTHING;
 ## Ecosystem gotchas
 
 - **`createClient()`/`createServiceClient()` are async** — always `await`. Forgetting the await returns a Promise and every `.from()` throws.
-- **Service client bypasses RLS.** Only use it after you have authenticated + authorized the caller yourself. For plain user reads, use the session `createClient()` so RLS does the scoping.
+- **Service client bypasses RLS.** Only use it after you have authenticated + authorized the caller yourself. For CRUD reads AND writes, use the session `createClient()` so RLS does the scoping; the generated routes never touch the service client. If you add one later, keep `pickAllowed` and (for owner tables) the owner filter, because nothing else is checking.
 - **`requireAuth` currently has a test bypass** (returns a hard-coded admin) in this repo — keep the guard call in place so it works once real auth is restored; don't build logic that assumes the bypass.
 - **CRM tables are staff-shared** (`auth.role() = 'authenticated'`), so a per-user `user_id` column is optional there. Only add owner-scoping for genuinely private per-user data (e.g. `marketing_strategies`, which is `.eq('user_id', user.id)` + `onConflict: 'user_id,module_id'`).
 - **Canonical paths only** — write under `~/GILDED-EDGE-ECOSYSTEM/ventures/gildedge-portal`, never the `~/Documents/GILDEDGE/...` symlinks.
@@ -169,5 +190,6 @@ ON CONFLICT (id) DO NOTHING;
 ## Files in this skill
 
 - `scripts/new-crud-entity.sh` — dry-run generator; prints page.tsx + route.ts + migration + seed. `--write` to save into the venture.
-- `references/route-handler.ts` — the full annotated GET/POST/PATCH/DELETE reference handler.
+- `references/route-handler.ts` — the full annotated GET/POST/PATCH/DELETE reference handler (staff-shared, `--access staff`).
+- `references/route-handler.owner.ts`: the owner-scoped variant (`--access owner`); stamps and filters on the owner column.
 - `references/page.tsx` — the reference RSC page + audit-log wiring.

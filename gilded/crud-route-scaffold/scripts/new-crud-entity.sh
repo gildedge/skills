@@ -20,10 +20,17 @@
 #   --section  <name>   RBAC section for requireAuth (default: crm)
 #   --column   k:type[:notnull]   repeatable
 #   --fk       child_col:parent_table   repeatable (adds FK + index)
-#   --access   staff|owner   RLS model hint (default: staff)
+#   --access   staff|owner   access model (default: staff)
+#                 staff: shared CRM route, references/route-handler.ts
+#                 owner: per-user route, references/route-handler.owner.ts;
+#                        stamps --owner on insert and filters every query on it
 #   --owner    <col>    owner column for owner-scoped tables (default: user_id)
 #   --venture  <name>   target venture dir (default: gildedge-portal)
 #   --write             write files instead of printing
+#
+# The route's ALLOWED_FIELDS allowlist is filled from the --column and --fk
+# names (minus id, created_at, updated_at and the owner column). Only those
+# keys are ever written from a request body.
 # ══════════════════════════════════════════════════════════════════
 set -e
 
@@ -37,6 +44,20 @@ ROOT="${GILDED_ROOT:-$HOME/GILDED-EDGE-ECOSYSTEM}"
 COLS=""   # newline-delimited "name:type:notnull"
 FKS=""    # newline-delimited "child:parent"
 
+# Names end up inside SQL, TypeScript and sed replacements, so hold them to
+# plain snake_case. Explicit classes, not a-z ranges, so locale can't widen it.
+is_ident() {
+  case "$1" in
+    ''|[![:lower:]_]*|*[![:lower:][:digit:]_]*) return 1 ;;
+    *) return 0 ;;
+  esac
+}
+need_ident() {
+  if ! is_ident "$2"; then
+    echo "ERROR: $1 must be snake_case [a-z0-9_]: '$2'" >&2; exit 2
+  fi
+}
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --entity)  ENTITY="$2";  shift 2 ;;
@@ -44,9 +65,12 @@ while [ $# -gt 0 ]; do
     --access)  ACCESS="$2";  shift 2 ;;
     --owner)   OWNER="$2";   shift 2 ;;
     --venture) VENTURE="$2"; shift 2 ;;
-    --column)  COLS="$COLS$2
+    --column)  need_ident "--column name" "${2%%:*}"
+               COLS="$COLS$2
 "; shift 2 ;;
-    --fk)      FKS="$FKS$2
+    --fk)      need_ident "--fk column" "${2%%:*}"
+               need_ident "--fk parent table" "${2#*:}"
+               FKS="$FKS$2
 "; shift 2 ;;
     --write)   WRITE=1; shift ;;
     -h|--help) grep '^#' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
@@ -55,9 +79,17 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -z "$ENTITY" ]; then echo "ERROR: --entity is required" >&2; exit 2; fi
-case "$ENTITY" in
-  [a-z_]*) : ;;
-  *) echo "ERROR: --entity must be snake_case [a-z0-9_]: '$ENTITY'" >&2; exit 2 ;;
+need_ident "--entity" "$ENTITY"
+need_ident "--owner" "$OWNER"
+# RBAC section slugs use hyphens (pitch-deck, audit-log).
+case "$SECTION" in
+  ''|*[![:lower:][:digit:]_-]*)
+    echo "ERROR: --section must be a slug [a-z0-9_-]: '$SECTION'" >&2; exit 2 ;;
+esac
+case "$ACCESS" in
+  staff) ROUTE_TEMPLATE="route-handler.ts" ;;
+  owner) ROUTE_TEMPLATE="route-handler.owner.ts" ;;
+  *) echo "ERROR: --access must be staff or owner: '$ACCESS'" >&2; exit 2 ;;
 esac
 
 DATE="$(date +%Y%m%d)"
@@ -99,6 +131,32 @@ fk_idx() {
   done
 }
 
+# Owner-scoped routes filter every query on the owner column, so index it.
+owner_idx() {
+  if [ "$ACCESS" = "owner" ]; then
+    printf 'CREATE INDEX IF NOT EXISTS idx_%s_%s ON %s(%s);\n' "$ENTITY" "$OWNER" "$ENTITY" "$OWNER"
+  fi
+}
+
+# ALLOWED_FIELDS for the route: FK + regular column names as a TS list body,
+# e.g. 'client_id', 'total'. Server-owned columns are never client-settable.
+fields_list() {
+  printf '%s\n%s\n' "$FKS" "$COLS" | while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    name="$(printf '%s' "$line" | cut -d: -f1)"
+    case "$name" in
+      id|created_at|updated_at) continue ;;
+    esac
+    if [ "$ACCESS" = "owner" ] && [ "$name" = "$OWNER" ]; then continue; fi
+    printf "'%s'\n" "$name"
+  done | awk 'NF && !seen[$0]++' | paste -sd, - | sed 's/,/, /g'
+}
+FIELDS="$(fields_list)"
+if [ -z "$FIELDS" ]; then
+  echo "WARNING: no --column/--fk given, so ALLOWED_FIELDS is empty and" >&2
+  echo "         POST/PATCH will write nothing from the body until you fill it." >&2
+fi
+
 # All column lines together (FK + owner + regular), each on its own line.
 all_cols() {
   fk_ddl
@@ -123,7 +181,7 @@ $(all_cols)
   updated_at     TIMESTAMPTZ DEFAULT now()
 );
 
-$(fk_idx)
+$(fk_idx; owner_idx)
 ALTER TABLE ${ENTITY} ENABLE ROW LEVEL SECURITY;
 
 -- ═══════════════════════════════════════════════════════════════════
@@ -151,9 +209,16 @@ SQL
 }
 
 # ── Route handler ───────────────────────────────────────────────────
+# staff -> route-handler.ts, owner -> route-handler.owner.ts (see --access).
+# Every substituted value was validated above, so none can break the sed.
+# SECTION and OWNER are matched with their quotes: a bare s/SECTION/crm/
+# also rewrote the const's own name (const crm = 'crm'), which is a syntax
+# error for hyphenated sections such as pitch-deck.
 gen_route() {
-  sed -e "s/ENTITY/${ENTITY}/g" -e "s/SECTION/${SECTION}/g" \
-    "$(dirname "$0")/../references/route-handler.ts"
+  sed -e "s/ENTITY/${ENTITY}/g" -e "s/'SECTION'/'${SECTION}'/g" \
+      -e "s/'OWNER'/'${OWNER}'/g" \
+      -e "s|/\* FIELDS \*/|${FIELDS}|" \
+    "$(dirname "$0")/../references/${ROUTE_TEMPLATE}"
 }
 
 # ── Page ────────────────────────────────────────────────────────────
