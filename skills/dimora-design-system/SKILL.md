@@ -183,6 +183,30 @@ Hard-won rules:
   plausible coordinates (NYC, Litchfield, Greenwich, Boca, Sagaponack, Aspen).
 - QA override URL params: `?theme=`, `?sky=dawn|day|dusk|night`, `?hour=`.
 
+## Drawings (FloorPlanViewer pattern, 2026-08)
+
+`lib/floorplans.ts` expands band-row specs into sheets; `components/FloorPlanViewer.tsx`
+draws them. The governing rule: **no room is ever just a rectangle.**
+
+- **A room is its polygon.** A drawing code that claims cells across bands
+  unions into ONE rectilinear `RoomShape` (atomic-grid boundary walk,
+  largest shoelace loop wins). Reception halls turn an L, through-halls
+  walk a zigzag spine, kitchens wrap the hearth end. Author the shape by
+  repeating the code across bands with weights placed so shared edges land
+  flush — a misaligned toe is a hairline notch, and it shows.
+- **Labels ride the largest cell** (`shape.label`) — name, fixtures, ceiling
+  callout and dimensions hang where the eye lands, never in the small lobe.
+  Dimensions own the whole bounding box and admit extra lobes with a `+`.
+- **The core rule still governs**: stair/lift/drum must sit inside a hall
+  (a hall may underlie the core; a room may not). Rebalance bands around
+  the core's host room, never the reverse.
+- **Disconnected duplicates degrade, not vanish**: scattered cells with one
+  code draw as separate shapes — but the audit flags them MED; unioned
+  cells report INFO. Keep `scripts/audit-plans.mts` green (0 HIGH) after
+  every plan edit; it is the drawings' contract with the room register.
+- Polygon points inset 0.25u centroid-ward so the poché wall still reads;
+  the outline, core, windows and bays stay rect-based.
+
 ## Review checklist
 
 1. Exactly one gold focal point per viewport?
