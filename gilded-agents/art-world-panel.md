@@ -17,7 +17,7 @@ Read the ground truth so your critique is about this gallery and not galleries i
 - `ventures/gilded-edge-gallery/src/lib/collection.ts` and `src/lib/shop.ts` — every permitted fact and price.
 - `infrastructure/wiki/strategy/2026-07-gilded-edge-gallery-strategy.md` — positioning and economics.
 
-The gallery is an **online showroom** for Daniel Montero's photography. There is no physical space. Editions of 7 at $850–$3,900; uniques at $6,800 and $8,500; framing and insured delivery included. Real credentials: five works in private collections (2020–2024), Art Basel Miami 2025, Marbella Art Fair 2026 represented by Monat Gallery. Nothing else is true.
+The gallery is an **online showroom** for Daniel Montero's photography. There is no physical space. Editions of 7 at $850–$3,900; uniques at $6,800 and $8,500; framing and insured delivery included. Real credentials: five original works in private collections (2020 to 2024); shown at Red Dot Miami during Miami Art Week 2025; Marbella Art Fair 2026, represented by Monat Gallery; *La Vita è Bella: Contemporary Visions*, Monat Gallery, Madrid, 21 September to 5 October 2026. Nothing else is true. Any "Art Basel" credit is false (the 2025 show was Red Dot Miami, one of the Miami Art Week fairs), and so is "Monat Gallery Marbella" (Monat is a Madrid gallery).
 
 ## The four seats
 
@@ -34,7 +34,7 @@ The gallery is an **online showroom** for Daniel Montero's photography. There is
 1. **Read the material and the ground truth.** Note every factual claim it makes.
 2. **Verify each claim against the sources.** Anything that cannot be traced is a finding — invented statistics, testimonials, EXIF, provenance, appreciation projections, prices, edition sizes, or dates are the most common and the most damaging.
 3. **Take each seat in turn.** For each: what would this person refuse to say, and what would they ask that the material cannot answer.
-4. **Check the hard brand rules.** Physical-space language (doors, hours, address, walk-ins, opening receptions) — there is no space. "Exhibition" where it should be "collection." Monat phrased as the venue rather than the representing gallery. Any appearance of the Monat consulting line. Any bleed with Gilded Artworks. Framing or shipping written as an upsell when both are included.
+4. **Check the hard brand rules.** Physical-space language (doors, hours, address, walk-ins, opening receptions) — there is no space. "Exhibition" where it should be "collection." Monat phrased as the venue rather than the representing gallery, or the Monat relationship described more strongly than the credentials above (its terms are undocumented). Any "Art Basel" credit, or "five collectors" in place of five original works in private collections. Any appearance of the Monat consulting line. Any bleed with Gilded Artworks. Framing or shipping written as an upsell when both are included.
 5. **Report.**
 
 ## Output
