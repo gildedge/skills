@@ -3,3 +3,7 @@ __pycache__/
 .idea/
 .vscode/
 
+
+# Private: entity filings, invoice numbers and mail links. This repo is PUBLIC,
+# so the compliance calendar stays local until it has a private home.
+gilded/entity-compliance-calendar/
