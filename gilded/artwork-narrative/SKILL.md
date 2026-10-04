@@ -36,9 +36,11 @@ Everything below is confirmed and is the entire permitted factual palette.
 
 **The artist.** Daniel Montero. Colombian-born, New York-based. Self-taught. His father handed him his first professional camera at fifteen; he taught himself everything after that. Cites Peter Lik as a direct influence. Shoots a Canon EOS R5 C.
 
-**The credentials.** Five original works sold into private collections, 2020–2024, direct and unrepresented. Art Basel Miami 2025. Represented by **Monat Gallery** (Madrid/Marbella) at the **Marbella Art Fair**, opening 2026-07-30.
+**The credentials.** Five original works in private collections, sold 2020 to 2024, direct and unrepresented. Shown at **Red Dot Miami** during Miami Art Week 2025 (Mana Wynwood, 3 to 7 December 2025). Represented by **Monat Gallery** (Madrid) at the **Marbella Art Fair**, opening 2026-07-30. *La Vita è Bella: Contemporary Visions*, Monat Gallery, Madrid, 21 September to 5 October 2026.
 
-> Phrasing, corrected by the artist: the event is the **Marbella Art Fair**; Monat is the **representing gallery**, not the venue. Write "Marbella Art Fair, with Monat" or "represented by Monat." Never "Monat Gallery Marbella" as though it were the show.
+> Corrected by the artist, 2026-09-21: the 2025 show was **Red Dot Miami**, one of the Miami Art Week fairs. It was **not Art Basel**. Write "shown at Red Dot Miami during Miami Art Week 2025." Never write "Art Basel", "Art Basel Miami Beach", "Art Basel-exhibited" or "represented at Art Basel." "Five collectors" is unverified; write "five original works in private collections." The terms of the Monat relationship are undocumented, so never describe it more strongly than it is described here.
+>
+> Phrasing, corrected by the artist: the event is the **Marbella Art Fair**; Monat is the **representing gallery**, not the venue. Write "Marbella Art Fair, with Monat" or "represented by Monat." Never "Monat Gallery Marbella" as though it were the show: Monat is a Madrid gallery.
 >
 > This Monat is the contemporary art gallery. It is unrelated to the Monat consulting line, which never appears on this brand under any circumstances.
 
@@ -66,7 +68,7 @@ Obsidian, gold, warm white. Cormorant Garamond over Inter. The prose should sit 
 
 Concrete nouns. Real numbers. No "nestled," "boasts," "curated experience," "journey," "elevate," "timeless elegance," "must-have," or any adjective that could be swapped onto a different photograph without anyone noticing.
 
-**There is no cause angle in photography copy.** A photograph stands on 1 of 1, the museum ArtBox build, Art Basel Miami 2025, and Monat representation — a complete argument on its own. The pledge belongs to the generative line only, and importing it here hands an $8,500 collector a reason to think they were buying absolution rather than a photograph. Positioning is **best available materials**, never eco-materials.
+**There is no cause angle in photography copy.** A photograph stands on 1 of 1, the museum ArtBox build, Red Dot Miami 2025, and Monat representation — a complete argument on its own. The pledge belongs to the generative line only, and importing it here hands an $8,500 collector a reason to think they were buying absolution rather than a photograph. Positioning is **best available materials**, never eco-materials.
 
 ⚠️ **The two lines must never blend in one collection view.** They now sit under one brand, so the separation has to be done by the interface: distinct programs, distinct pages, never interleaved in the same grid. And the "shot in camera" claim attaches to **the photography program**, never to the gallery as a whole — see the note in `collector-offer-ladder`.
 
@@ -87,7 +89,7 @@ Where that one thing is not known, **ask for it.** A description written without
 - **Lot essay** (150–250 words, unique tier): Hero's-Journey shape — the situation, what changed, what was taken, what it now means to own. This is where cultural capital, rarity, and provenance are argued.
 - **Shop listing**: the object first (size, edition, build, what's included), the story second, the price plainly stated. **Never obscure the price** — 69% of collectors hesitate over price opacity, and younger collectors read "inquire" as a warning.
 - **Hero line** (≤ 15 words): the sharpest true fact.
-- **Collector email**: one story, one work, one ask. Match the lane — the five prior buyers get a note from Daniel personally; colder fair contacts get the gallery voice.
+- **Collector email**: one story, one work, one ask. Match the lane — the prior buyers get a note from Daniel personally; colder fair contacts get the gallery voice.
 
 ### 4. Match levers to the price band
 From `collector-offer-ladder`:
@@ -109,6 +111,7 @@ Write three. Read them aloud. Keep the one with the most true detail per sentenc
 - [ ] No invented statistic, testimonial, EXIF, provenance, or appreciation claim.
 - [ ] No physical-space language. No announced opening date.
 - [ ] Monat phrased correctly; consulting line absent.
+- [ ] The 2025 credit reads Red Dot Miami during Miami Art Week. No "Art Basel" anywhere.
 - [ ] Price stated plainly; framing and shipping described as included.
 - [ ] No banned adjective survives.
 - [ ] Every sentence would still be true if a collector fact-checked it at the fair.

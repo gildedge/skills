@@ -85,7 +85,7 @@ This is a stance, not a percentage, and it is much stronger than a split rate. *
 
 - **It removes the AI objection entirely.** The researched position in `instagram-growth-playbook.md` §1 is that AI backlash in art audiences is acute — Meta's auto-label fires even on generative-fill retouching. The objection is specifically that machines are taking money artists used to earn. At 50% that objection still lands; at **100% it has nothing to grip.** The artist is not in the financial equation.
 - **It separates the two lines by conviction rather than by policy.** Now that both sell under one roof, the pledge is what keeps them legibly distinct — and a stance is more durable than a rule someone has to remember to enforce.
-- **It protects the photography's pricing.** No pledge on the photography means no risk of a $8,500 unique reading as absolution-for-sale, and no awkward asymmetry to explain. The photography stands on 1 of 1, museum ArtBox, Art Basel, Monat — which is what it should have been standing on all along.
+- **It protects the photography's pricing.** No pledge on the photography means no risk of a $8,500 unique reading as absolution-for-sale, and no awkward asymmetry to explain. The photography stands on 1 of 1, museum ArtBox, Red Dot Miami, Monat — which is what it should have been standing on all along.
 
 100% is also the only version of this that is *news*. 50% is a marketing percentage; 100% is a position. Treat it as a launch story.
 
@@ -184,7 +184,7 @@ These are the current best candidates. They are proposals awaiting the artist's 
 
 Carried over from the source curriculum and explicitly rejected here:
 
-- **Meta cold-traffic funnels as the primary channel.** For $850–$8,500 photographs the real channels are fair-originated collectors, the five prior buyers, Monat's collector list, and email. Paid social may support a $60 folio; it does not sell a $8,500 unique to a stranger.
+- **Meta cold-traffic funnels as the primary channel.** For $850–$8,500 photographs the real channels are fair-originated collectors, the prior buyers, Monat's collector list, and email. Paid social may support a $60 folio; it does not sell a $8,500 unique to a stranger.
 - **Discount-led moments** (Black Friday and similar). If a seasonal moment is used at all, it reframes value — it never cuts price.
 - **"Intuitive/energetic" pricing.** Cost-anchored, always.
 - **Free-shipping-style upsells.** Framing and insured delivery are already included. Do not un-include them to sell them back.
